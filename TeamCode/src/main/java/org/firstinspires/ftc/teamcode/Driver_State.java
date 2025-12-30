@@ -21,6 +21,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 //import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -57,7 +58,7 @@ public class Driver_State extends LinearOpMode {
     private DcMotor motor7; //angler for shooter
     private DcMotor motor8; //test for intake
     private Servo servo1; //Artifact flicker - name by micah
-    private Servo servo2; //ball juggler
+    private CRServo CRservo2; //artifact pusher
 
     // private DcMotor motor_5; //horizontal arm
     // private DcMotor motor_6; //vertical arm
@@ -87,7 +88,7 @@ public class Driver_State extends LinearOpMode {
         motor7 = hardwareMap.get(DcMotor.class, "motor7");
         motor8 = hardwareMap.get(DcMotor.class, "motor8");
         servo1 = hardwareMap.get(Servo.class, "servo1");
-        servo2 = hardwareMap.get(Servo.class, "servo2");
+        CRservo2 = hardwareMap.get(CRServo.class, "CRservo2");
         //motor_5 = hardwareMap.get(DcMotor.class, "motor_5");)
 
         motor7.setTargetPosition(0);
@@ -124,7 +125,6 @@ public class Driver_State extends LinearOpMode {
             motor5.setDirection(DcMotor.Direction.REVERSE); //shooting motor
             motor6.setDirection(DcMotor.Direction.FORWARD); //shooting motor
             motor7.setDirection(DcMotor.Direction.FORWARD);
-            servo2.setDirection(Servo.Direction.REVERSE);
 
             waitForStart();
             //sample code from https://gm0.org/en/stable/docs/software/mecanum-drive.html
@@ -152,26 +152,26 @@ public class Driver_State extends LinearOpMode {
 
             //shooting code
                 if (gamepad1.right_trigger > .51) {
-                    motor5.setPower(0.8);
-                    motor6.setPower(0.8);
+                    motor5.setPower(0.65);
+                    motor6.setPower(0.65);
                 } else {
                     motor5.setPower(0);
                     motor6.setPower(0);
                 }
 
                 if (gamepad1.left_trigger > .51) {
-                    motor5.setPower(.5);
-                    motor6.setPower(.5);
+                    motor5.setPower(.55);
+                    motor6.setPower(.55);
                 } else {
                     motor5.setPower(0);
                     motor6.setPower(0);
                 }
 
-                if (gamepad1.right_bumper) {
-                    motor5.setPower(0.65);
-                    motor6.setPower(0.65);
+                if (gamepad2.right_bumper) {
+                  motor5.setPower(0.5);
+                  motor6.setPower(0.5);
                 } else {
-                    motor5.setPower(0);
+                  motor5.setPower(0);
                 }
 
                 //intake test
@@ -192,6 +192,7 @@ public class Driver_State extends LinearOpMode {
                     motor7.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     shootAngle = 0;
                 } */
+            /*
                 if (gamepad1.dpad_up) {
                     motor7.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     shootAngle = 60;
@@ -201,11 +202,20 @@ public class Driver_State extends LinearOpMode {
                 if (gamepad1.dpad_down) {
                     motor7.setPower(0);
                     motor7.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                }
+                } */
 
                 //start of code for the ball whacker
-                if (gamepad1.dpad_left) {
-                    servo1.setPosition(.83);
+                //.5 - .55 is default angle (far shot)
+            if (gamepad1.dpad_left) { //end
+                    servo1.setPosition(1);
+                }
+
+                if (gamepad1.dpad_down) { //mid
+                    servo1.setPosition(0.85);
+                }
+
+                if (gamepad1.dpad_right) { //load
+                    servo1.setPosition(0.65);
                 }
                 /*
                 if (gamepad2.b) {
@@ -215,23 +225,15 @@ public class Driver_State extends LinearOpMode {
                     servo1.setPosition(0.4);
                 }
                 */
-                if (gamepad1.dpad_right) {
-                    servo1.setPosition(0.2);
-                } //end of code for the ball whacker
+            //end of code for the ball whacker
 
                 //start of test code for the ball juggler
                 if (gamepad1.a) { //start position
-                servo2.setPosition(1);
+                CRservo2.setPower(1);
                 }
                 if (gamepad1.b) {
-                servo2.setPosition(0.55); //2nd position
+                CRservo2.setPower(0); //2nd position
                 }
-                if (gamepad1.y) {
-                servo2.setPosition(0.3);
-                }
-                if (gamepad1.x) { //last position
-                servo2.setPosition(0);
-                } //end of the ball juggler test code
 
 //if (gamepad1.left_stick_y > .1 || gamepad1.left_stick_x > .1) {
                 topLeft.setPower((y - x + rx) * speed); //front left says the sample...this one is mapped good

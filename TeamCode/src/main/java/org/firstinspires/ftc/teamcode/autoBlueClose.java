@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -51,12 +52,12 @@ public class autoBlueClose extends LinearOpMode {
     private DcMotor topRight; //Right Front Actual, port1
     private DcMotor topLeft; //Left Front Actual, port2
     private DcMotor bottomLeft; //Left Rear Actual, port3
-    private DcMotor motor5; //shooter 1!!!!!
-    private DcMotor motor6; //shooter 2!!!!!
+    private DcMotorEx motor5; //shooter 1!!!!!
+    private DcMotorEx motor6; //shooter 2!!!!!
     private DcMotor motor7; //shooting angler
-    private DcMotor motor8; //intake / tage
+    private DcMotorEx motor8; //intake / tage
     private Servo servo1; //the ball whacker
-    private Servo servo2; //the ball juggler
+    private CRServo CRservo2; //the ball juggler
     
     private IMU imu = null; // Control/Expansion Hub IMU
 
@@ -118,9 +119,9 @@ public class autoBlueClose extends LinearOpMode {
         motor5 = hardwareMap.get(DcMotorEx.class, "motor5");
         motor6 = hardwareMap.get(DcMotorEx.class, "motor6");
         motor7 = hardwareMap.get(DcMotor.class, "motor7");
-        motor8 = hardwareMap.get(DcMotor.class, "motor8");
+        motor8 = hardwareMap.get(DcMotorEx.class, "motor8");
         servo1 = hardwareMap.get(Servo.class, "servo1");
-        servo2 = hardwareMap.get(Servo.class, "servo2");
+        CRservo2 = hardwareMap.get(CRServo.class, "CRservo2");
         
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // When run, this OpMode should start both motors driving forward. So adjust these two lines based on your first test drive.
@@ -196,7 +197,6 @@ public class autoBlueClose extends LinearOpMode {
 
       //  holdHeading( TURN_SPEED,   0.0, 1.0);    // Hold  0 Deg heading for 1 second
 
-
         if (opModeIsActive()) {
             while (opModeIsActive()) {
 
@@ -220,19 +220,68 @@ public class autoBlueClose extends LinearOpMode {
                 driveStraight(); */
                 //turnToHeading( TURN_SPEED, 50.0);               // Turn  CW to -45 Degrees
                 //sleep(10000);
-                driveStraight(DRIVE_SPEED, -50, 0.0);
-                sleep(500);
-                setAngleHigh();
-                sleep(2000);
+                driveStraight(DRIVE_SPEED, -40, 0.0);
                 shootClose();
-                sleep(2000);
+                sleep(500);
+                turnToHeading(.6, -5);
+                //setAngleMed();
+                sleep(1500);
                 //artifactArmBack();
                 //sleep(500);
-                setArtifact();
-                sleep(2000);
-                shootOff();
+                setArtifact(); //Shoot artifact #1
+                sleep(1000);
+                //shootOff();
+                //setAngleOff();
+                artifactArmBack();
+                sleep(1000);
+                intakeOn();
+                sleep(1500);
+                setNextArtifact();
                 sleep(500);
-                turnToHeading(.6, -135);
+                intakeOff();
+                sleep(500);
+                //shootClose();
+                //setAngleMed();
+                sleep(2500);
+                setArtifact(); //Shoots artifact #2
+                sleep(500);
+                driveStraight(DRIVE_SPEED, 12, 0);
+                sleep(500);
+                driveSideways(DRIVE_SPEED, -18, 0);
+                sleep(500);
+                turnToHeading(.6, -130);
+                sleep(500);
+                artifactArmBack();
+                sleep(1000);
+                intakeOn();
+                sleep(500);
+                driveStraight(DRIVE_SPEED, -22, -130);
+                sleep(450);
+                intakeOff();
+                sleep(500);
+                driveStraight(DRIVE_SPEED, 24, -130);
+                sleep(500);
+                driveSideways(DRIVE_SPEED, 6, -130);
+                sleep(500);
+                turnToHeading(.6, 0);
+                sleep(500);
+                shootClose();
+                sleep(500);
+                setNextArtifact();
+                sleep(1000);
+                setArtifact(); //Shoot artifact #3
+                sleep(500);
+                artifactArmBack();
+                sleep(1000);
+                intakeOn();
+                sleep(500);
+                setArtifact(); //Shoot artifact #4
+                sleep(500);
+                shootOff();
+                artifactArmBack();
+                sleep(500);
+                setArtifact();
+                driveSideways(DRIVE_SPEED, -6, 0);
                 sleep(20000);
             }
         }
@@ -247,53 +296,67 @@ public class autoBlueClose extends LinearOpMode {
 
     //*****15786 functions for 2025 season
         
-    public void setAngleLow()
+    public void setAngleOff()
     {
-      motor6.setTargetPosition(10);
+        motor7.setTargetPosition(0);
+        motor7.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
     
     public void setAngleMed()
     {
-      motor6.setTargetPosition(30);
+        motor7.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motor7.setTargetPosition(30);
     }
     
     public void setAngleHigh()
     {
         motor7.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motor7.setTargetPosition(60);
+        motor7.setTargetPosition(30);
     }
 
     public void setArtifact()
     {
-        servo1.setPosition(.85);
+        servo1.setPosition(1);
     }
 
     public void artifactArmBack()
     {
-        servo1.setPosition(.6);
+        servo1.setPosition(.65);
     }
 
     public void setNextArtifact()
     {
-
+        servo1.setPosition(.85);
     }
     
     public void shootClose()
     {
-        motor5.setPower(.5);
-        motor6.setPower(.5);
+        motor5.setVelocity(950);
+        motor6.setVelocity(950);
     }
     
     public void shootFar()
     {
-        motor5.setPower(.8);
-        motor6.setPower(.8);
+        motor5.setVelocity(1000);
+        motor6.setVelocity(1000);
     }
     
     public void shootOff()
     {
-        motor5.setPower(0);
-        motor6.setPower(0);
+        motor5.setVelocity(0);
+        motor6.setVelocity(0);
+    }
+
+    public void intakeOn()
+    {
+        motor8.setVelocity(950);
+        CRservo2.setPower(1);
+    }
+
+    public void intakeOff()
+    {
+        motor8.setVelocity(0);
+        CRservo2.setPower(0);
     }
     
         public void clawClosed()

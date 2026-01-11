@@ -1,6 +1,9 @@
 /*
 Copyright 2016 FIRST Tech Challenge Team 11497
 
+NOTES TO DO:
+- Make angler go back down (CODE IS WRITTEN, JUST NEEDS TO BE UPLOADED)
+- Make lower angle setting
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and
 associated documentation files (the "Software"), to deal in the Software without restriction,
 including without limitation the rights to use, copy, modify, merge, publish, distribute,
@@ -56,7 +59,7 @@ public class Driver_State extends LinearOpMode {
     private DcMotorEx motor5; //for shooter
     private DcMotorEx motor6; //for shooter
     private DcMotor motor7; //angler for shooter
-    private DcMotor motor8; //test for intake
+    private DcMotorEx motor8; //test for intake
     private Servo servo1; //Artifact flicker - name by micah
     private CRServo CRservo2; //artifact pusher
 
@@ -86,7 +89,7 @@ public class Driver_State extends LinearOpMode {
         motor5 = hardwareMap.get(DcMotorEx.class, "motor5");
         motor6 = hardwareMap.get(DcMotorEx.class, "motor6");
         motor7 = hardwareMap.get(DcMotor.class, "motor7");
-        motor8 = hardwareMap.get(DcMotor.class, "motor8");
+        motor8 = hardwareMap.get(DcMotorEx.class, "motor8");
         servo1 = hardwareMap.get(Servo.class, "servo1");
         CRservo2 = hardwareMap.get(CRServo.class, "CRservo2");
         //motor_5 = hardwareMap.get(DcMotor.class, "motor_5");)
@@ -130,9 +133,9 @@ public class Driver_State extends LinearOpMode {
             //sample code from https://gm0.org/en/stable/docs/software/mecanum-drive.html
 
             //driver 1 the Driver
-            double y = gamepad1.left_stick_y;// * DriverSwap; // Remember, this is reversed! //added*-1 in both y n x
+            double y = gamepad1.left_stick_y * -1;// * DriverSwap; // Remember, this is reversed! //added*-1 in both y n x
             double x = gamepad1.left_stick_x * 1.5; // Counteract imperfect strafing, readd driverswap here if use
-            double rx = gamepad1.right_stick_x * -1.5;
+            double rx = gamepad1.right_stick_x * 1.5;
             //boolean  = gamepad1.right_bumper;
             boolean rb = gamepad1.left_bumper;
 
@@ -151,20 +154,20 @@ public class Driver_State extends LinearOpMode {
             } */
 
             //shooting code
-                if (gamepad1.right_trigger > .51) {
-                    motor5.setPower(0.65);
-                    motor6.setPower(0.65);
+                if (gamepad1.right_trigger > .1) {
+                    motor5.setVelocity(1700);
+                    motor6.setVelocity(1700);
                 } else {
-                    motor5.setPower(0);
-                    motor6.setPower(0);
+                    motor5.setVelocity(0);
+                    motor6.setVelocity(0);
                 }
 
-                if (gamepad1.left_trigger > .51) {
-                    motor5.setPower(.55);
-                    motor6.setPower(.55);
+                if (gamepad1.left_trigger >.1) {
+                    motor5.setVelocity(1850);
+                    motor6.setVelocity(1850);
                 } else {
-                    motor5.setPower(0);
-                    motor6.setPower(0);
+                    motor5.setVelocity(0);
+                    motor6.setVelocity(0);
                 }
 
                 if (gamepad2.right_bumper) {
@@ -176,33 +179,34 @@ public class Driver_State extends LinearOpMode {
 
                 //intake test
                 if (gamepad1.right_bumper) {
-                motor8.setPower(1);
+                motor8.setVelocity(3500);
+                CRservo2.setPower(1);
                 } else {
-                motor8.setPower(0);
+                motor8.setVelocity(0);
+                CRservo2.setPower(0);
                 }
 
                 //Shooter angle code
                 //sets shoot angle to 50 when left dpad is pressed
-            /*
-                if (gamepad1.dpad_left) {
+                if (gamepad1.y) {
                     motor7.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     shootAngle = 30;
                 }
-                else if (gamepad1.dpad_right) {
+                else if (gamepad2.dpad_right) {
                     motor7.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     shootAngle = 0;
-                } */
-            /*
-                if (gamepad1.dpad_up) {
+                }
+
+                if (gamepad2.dpad_up) {
                     motor7.setMode(DcMotor.RunMode.RUN_TO_POSITION);
                     shootAngle = 60;
                 }
                 motor7.setTargetPosition(shootAngle);
                 motor7.setPower(1);
-                if (gamepad1.dpad_down) {
+                if (gamepad1.x) {
                     motor7.setPower(0);
                     motor7.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                } */
+                }
 
                 //start of code for the ball whacker
                 //.5 - .55 is default angle (far shot)
@@ -227,6 +231,7 @@ public class Driver_State extends LinearOpMode {
                 */
             //end of code for the ball whacker
 
+            /*
                 //start of test code for the ball juggler
                 if (gamepad1.a) { //start position
                 CRservo2.setPower(1);
@@ -234,6 +239,14 @@ public class Driver_State extends LinearOpMode {
                 if (gamepad1.b) {
                 CRservo2.setPower(0); //2nd position
                 }
+                */
+            if (gamepad1.a) {
+                motor8.setVelocity(-4000);
+                CRservo2.setPower(-1);
+            } else {
+                motor8.setVelocity(0);
+                CRservo2.setPower(0);
+            }
 
 //if (gamepad1.left_stick_y > .1 || gamepad1.left_stick_x > .1) {
                 topLeft.setPower((y - x + rx) * speed); //front left says the sample...this one is mapped good
